@@ -1,0 +1,40 @@
+@startuml
+
+title WarmHouse Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "User", "A user of the system")
+Person(admin, "Administrator", "An administrator of the support")
+System(WarmHouseSystem, "WarmHouse System", "The system managing devices and providing users with measurements and support")
+
+Container_Boundary(WarmHouseSystem, "WarmHouse System") {
+  Container(SPA, "Single-page application", "React", "An application providing users with web-interface")
+  Container(APIGateway, "API Gateway", "Kong", "A layer between user interface and microservices")
+  Container(DeviceManagementService, "Device Management Service", "Node.js", "A service responsible for all the features related to device management")
+  Container(DeviceConfigurationService, "Device Configuration Service", "Node.js", "A service providing users with possibility to manage device configurations")
+  Container(SupportManagementService, "Support Management Service", "Node.js", "A service responsible for providing users with technical support")
+  Container(DeviceConfigurationDatabase, "Database", "PostgreSQL", "A database that stores the configurations for all the known devices")
+  Container(SupportManagementDatabase, "Database", "PostgreSQL", "A database that stores everything related to user requests and its processing")
+  Container(MessageBroker, "Message broker", "Kafka", "A message broker responsible for the asynchronous interactions between the system and the configured devices and storing information about all happened events")
+}
+
+System_Ext(device, "Device", "A device providing API for management and having sensors if needed")
+
+Rel(user, SPA, "Uses the system")
+Rel(SPA, APIGateway, "Sends requests")
+Rel(APIGateway, DeviceManagementService, "Sends requests")
+Rel(APIGateway, SupportManagementService, "Sends requests")
+Rel(APIGateway, DeviceConfigurationService, "Sends requests")
+Rel(DeviceManagementService, DeviceConfigurationService, "Gets data about a device before communicating to it")
+Rel(DeviceManagementService, MessageBroker, "Publishes a message in case the event doesn't require an immediate commitment (e.g. when a user changes the target temperature)")
+Rel(DeviceManagementService, device, "Sends a request directly to the device if the target event cannot be delayed (e.g. when a user closes an automatic gate) or when fetching measurements")
+Rel(device, MessageBroker, "Reads messages")
+Rel(SupportManagementService, SupportManagementDatabase, "Writes and reads data")
+Rel(DeviceConfigurationService, DeviceConfigurationDatabase, "Writes and reads data")
+Rel(admin, SPA, "Provides users with support")
+Rel(user,device,"Buys and configures")
+
+@enduml
