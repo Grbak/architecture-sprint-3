@@ -1,0 +1,26 @@
+@startuml
+
+title Device Configuration Service Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, "API Gateway", "Kong")
+Container(DeviceManagementService, "Device Management Service", "Node.js")
+Container(DeviceConfigurationDatabase, "Database", "PostgreSQL")
+
+
+Container(DeviceConfigurationService, "Device Configuration Service", "Node.js") {
+  Component(ConfigurationController, "ConfigurationController", "A controller processing incoming HTTP requests")
+  Component(ConfigurationService, "ConfigurationService", "A provider responsible for business logic implementation")
+  Component(ConfigurationRepository, "ConfigurationRepository", "A provider responsible for communicating with the database")
+}
+
+Rel(APIGateway, ConfigurationController, "Sends requests")
+Rel(DeviceManagementService, ConfigurationController, "Sends requests")
+Rel(ConfigurationController, ConfigurationService, "Calls the API")
+Rel(ConfigurationService, ConfigurationRepository, "Calls the API")
+Rel(ConfigurationRepository, DeviceConfigurationDatabase, "Writes and reads data")
+
+@enduml
