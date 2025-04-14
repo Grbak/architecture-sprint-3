@@ -1,0 +1,96 @@
+@startuml
+
+skinparam linetype ortho
+
+entity "User" {
+  *id : integer <<generated>>
+  --
+  *name : varchar
+  *email : varchar
+  *password: varchar
+  *create_date: timestamp
+}
+
+entity "House" {
+  *id : integer <<generated>>
+  --
+  *name : varchar
+  *user_id : integer <<FK>>
+  *create_date: timestamp
+}
+
+entity "Device" {
+  *id : integer <<generated>>
+  --
+  *name : varchar
+  *house_id : integer <<FK>>
+  *device_model_id : integer <<FK>>
+  *device_configuration_id: integer <<FK>>
+  *serial_integer: varchar
+  *device_type: varchar
+  *create_date: timestamp
+}
+
+entity "DeviceConfiguration" {
+  *id : integer <<generated>>
+  --
+  *device_id : integer <<FK>>
+  *ipv4: varchar
+  update_date: timestamp
+}
+
+entity "TelemetryData" {
+  *id : integer <<generated>>
+  --
+  *value: varchar
+  *measure : varchar
+  *create_date: timestamp
+}
+
+entity "DeviceProducer" {
+  *id : integer <<generated>>
+  --
+  *name: varchar
+  country: varchar
+}
+
+entity "DeviceModel" {
+  *id : integer <<generated>>
+  --
+  *name : varchar
+  *device_producer_id : integer <<FK>>
+}
+
+entity "SupportRequest" {
+  *id : integer <<generated>>
+  --
+  *user_id : integer <<FK>>
+  *admin_id: integer <<FK>>
+  *message : varchar
+  *create_date: timestamp
+  *status: varchar
+  update_date: timestamp
+}
+
+entity "Admin" {
+  *id : integer <<generated>>
+  --
+  *name : varchar
+  *email : varchar
+  *password: varchar
+  *create_date: timestamp
+}
+
+User ||..o{ House
+House ||..o{ Device
+Device ||..o{ TelemetryData
+Device ||..|| DeviceConfiguration
+DeviceModel ||..o{ Device
+DeviceProducer ||..o{ DeviceModel
+
+
+User ||..o{ SupportRequest
+Admin ||..o{ SupportRequest
+
+
+@enduml
