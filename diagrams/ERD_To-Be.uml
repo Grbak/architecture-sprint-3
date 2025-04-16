@@ -81,7 +81,7 @@ entity "Admin" {
   *create_date: timestamp
 }
 
-User ||..o{ House
+User }|..o{ House
 House ||..o{ Device
 Device ||..o{ TelemetryData
 Device ||..|| DeviceConfiguration
