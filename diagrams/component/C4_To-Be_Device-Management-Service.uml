@@ -1,0 +1,30 @@
+@startuml
+
+title Device Management Service Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, "API Gateway", "Kong")
+Container(DeviceConfigurationService, "Device Configuration Service", "Node.js")
+Container(MessageBroker, "Message broker", "Kafka")
+
+Container(DeviceManagementService, "Device Management Service", "Node.js") {
+  Component(DeviceController, "DeviceController", "A controller processing incoming HTTP requests")
+  Component(DeviceService, "DeviceService", "A provider responsible for business logic implementation")
+  Component(DeviceRepository, "DeviceRepository", "A provider responsible for communicating with devices")
+  Component(DeviceConfigurationRepository, "DeviceConfigurationRepository", "A provider responsible for fetching device configurations")
+}
+
+System_Ext(device, "Device")
+
+Rel(APIGateway, DeviceController, "Sends requests")
+Rel(DeviceController, DeviceService, "Calls the API")
+Rel(DeviceService, DeviceRepository, "Calls the API")
+Rel(DeviceService, DeviceConfigurationRepository, "Calls the API")
+Rel(DeviceConfigurationRepository, DeviceConfigurationService, "Calls the API")
+Rel(DeviceRepository, MessageBroker, "Publish a message")
+Rel(DeviceRepository, device, "Calls the API")
+
+@enduml

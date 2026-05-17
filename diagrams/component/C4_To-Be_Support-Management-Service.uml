@@ -1,0 +1,24 @@
+@startuml
+
+title Support Management Service Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, "API Gateway", "Kong")
+Container(SupportManagementDatabase, "Database", "PostgreSQL")
+
+
+Container(SupportManagementService, "Support Management Service", "Node.js") {
+  Component(SupportRequestController, "SupportRequestController", "A controller processing incoming HTTP requests")
+  Component(SupportRequestService, "SupportRequestService", "A provider responsible for business logic implementation")
+  Component(SupportRequestRepository, "SupportRequestRepository", "A provider responsible for communicating with the database")
+}
+
+Rel(APIGateway, SupportRequestController, "Sends requests")
+Rel(SupportRequestController, SupportRequestService, "Calls the API")
+Rel(SupportRequestService, SupportRequestRepository, "Calls the API")
+Rel(SupportRequestRepository, SupportManagementDatabase, "Writes and reads data")
+
+@enduml
